@@ -5,9 +5,14 @@ export const runtime = "nodejs";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-5";
 
-const EXTRACTION_PROMPT = `This is a photo of a brokerage account summary page. Extract every account row visible. For each, return the account number (if visible), the account holder or account name with registration type, and the TOTAL ACCOUNT VALUE — the full account value for the row (on Schwab Advisor Center reports this is the leftmost dollar figure per account row, sometimes circled by hand), NOT the cash balance, NOT market value long, NOT funds available to trade. Respond ONLY with a JSON array, no markdown fences, no commentary. Format: [{"account":"4463-9026","name":"KRAFT, ANDREW — Roth IRA","value":17111.18}]
+const EXTRACTION_PROMPT = `This is a photo of a brokerage account summary page. Extract every account row visible. For each, return the account number (if visible), the account holder or account name with registration type, and the TOTAL ACCOUNT VALUE — the full account value for the row (on Schwab Advisor Center reports this is the leftmost dollar figure per account row, sometimes circled by hand), NOT the cash balance, NOT market value long, NOT funds available to trade.
 
-Ignore handwritten annotations on the page except as hints; the printed values are the source of truth.`;
+Handwritten corrections take priority over what's printed:
+- If the printed account value has a line drawn through it and a new value is handwritten near it (e.g. above it), use the handwritten value instead of the crossed-out printed value.
+- If an entire account row is crossed out, that account is no longer available — omit it entirely from the results; do not include it in the JSON array at all.
+- For any row without these markings, the printed value is the source of truth as usual.
+
+Respond ONLY with a JSON array, no markdown fences, no commentary. Format: [{"account":"4463-9026","name":"KRAFT, ANDREW — Roth IRA","value":17111.18}]`;
 
 function stripJsonFences(text: string): string {
   let s = text.trim();
