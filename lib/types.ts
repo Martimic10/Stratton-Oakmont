@@ -4,6 +4,8 @@ export interface AccountRow {
   name: string;
   value: number;
   sourceFile?: string;
+  /** Sort key controlling table position — lower sorts first. See lib/ledger.ts. */
+  order: number;
 }
 
 export interface ExtractedAccount {
@@ -22,4 +24,6 @@ export interface PhotoJob {
   accountsFound?: number;
   errorMessage?: string;
   previewUrl?: string;
+  /** Position in which the photo was selected/uploaded — drives row ordering regardless of processing completion order. */
+  sequence: number;
 }
