@@ -7,6 +7,8 @@ const MODEL = process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-5";
 
 const EXTRACTION_PROMPT = `This is a photo of a brokerage account summary page. Extract every account row visible. For each, return the account number (if visible), the account holder or account name with registration type, and the TOTAL ACCOUNT VALUE — the full account value for the row (on Schwab Advisor Center reports this is the leftmost dollar figure per account row, sometimes circled by hand), NOT the cash balance, NOT market value long, NOT funds available to trade.
 
+Transcribe every value exactly as printed, digit for digit, including the exact cents. Do not round to the nearest dollar or any other unit, and do not "clean up" a number to something that looks tidier — if the printed value is $13,408.31, the value field must be 13408.31, not 13408 or 13408.30 or 13410. Look closely at the cents digits specifically; they are easy to misread but must never be approximated.
+
 Handwritten corrections take priority over what's printed:
 - If the printed account value has a line drawn through it and a new value is handwritten near it (e.g. above it), use the handwritten value instead of the crossed-out printed value.
 - If an entire account row is crossed out, that account is no longer available — omit it entirely from the results; do not include it in the JSON array at all.
